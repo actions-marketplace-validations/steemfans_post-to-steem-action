@@ -1,7 +1,8 @@
 name: 'Post To Steem Chain Action'
 author: 'ETY001'
-icon: 'align-justify'
-color: 'blue'
+branding:
+  icon: 'align-justify'
+  color: 'blue'
 description: 'To post an article to Steem chain'
 inputs:
   title:
