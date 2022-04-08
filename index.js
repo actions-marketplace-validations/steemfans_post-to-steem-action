@@ -17,23 +17,25 @@ async function main() {
     let maxAcceptedPayout = '1000000.000 SBD';
     let percentSteemDollars = 10000;
 
-    if (!(tags instanceof Array)) {
+    const tagsArr = tags.split(',');
+
+    if (tagsArr.length === 0) {
       throw {
-        message: 'tags must be array type.'
+        message: 'tags must be not empty.'
       }
     }
 
-    console.log(title, content, tags, author, wif);
+    console.log(title, content, tagsArr, author, wif);
 
     const jsonMetadata = {
-      tags,
+      tags: tagsArr,
       format: 'markdown',
       app: 'post-to-steem-action/1.0.0',
     };
 
-    const permlink = await createPermlink(title, author, parentAuthor, tags[0]);
+    const permlink = await createPermlink(title, author, parentAuthor, tagsArr[0]);
 
-    const result = await steem.broadcast.commentAsync(wif, parentAuthor, tags[0], author, permlink, title, content, jsonMetadata);
+    const result = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
 
     console.log('result: ', result);
 
