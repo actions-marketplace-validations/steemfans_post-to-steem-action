@@ -26,8 +26,6 @@ async function main() {
       }
     }
 
-    console.log(title, content, tagsArr, author, wif);
-
     const jsonMetadata = {
       tags: tagsArr,
       format: 'markdown',
@@ -36,9 +34,9 @@ async function main() {
 
     const permlink = await createPermlink(title, author, parentAuthor, tagsArr[0]);
 
-    const result = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
+    const commentResult = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
 
-    console.log('result: ', result);
+    console.log('comment_result: ', commentResult);
 
     switch (reward) {
       case 100:
@@ -52,8 +50,10 @@ async function main() {
         break;
     }
 
-    const result2 = await steem.broadcast.commentOptionsAsync(wif, author, permlink, maxAcceptedPayout, percentSteemDollars, allowVotes, allowCurationRewards, extensions);
-    console.log('result2: ', result2);
+    const commentOptionResult = await steem.broadcast.commentOptionsAsync(wif, author, permlink, maxAcceptedPayout, percentSteemDollars, allowVotes, allowCurationRewards, extensions);
+    console.log('comment_options_result: ', commentOptionResult);
+
+    core.setOutput('permlink', `https://steemit.com/${tagsArr[0]}/@${author}/${permlink}`);
 
   } catch (error) {
     core.setFailed(error.message);
