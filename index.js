@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const getSlug = require('speakingurl');
 const secureRandom = require('secure-random');
+const steem = require('steem');
 
 async function main() {
   try {
