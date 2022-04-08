@@ -1,0 +1,33 @@
+{
+  "name": "post-to-steem-action",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js -o dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steemfans/post-to-steem-action.git"
+  },
+  "keywords": [
+    "steem",
+    "action"
+  ],
+  "author": "ETY001",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/steemfans/post-to-steem-action/issues"
+  },
+  "homepage": "https://github.com/steemfans/post-to-steem-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.1",
+    "secure-random": "^1.1.2",
+    "speakingurl": "^14.0.1",
+    "steem": "^0.7.11"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.33.3"
+  }
+}

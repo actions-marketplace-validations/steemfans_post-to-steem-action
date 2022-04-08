@@ -1,0 +1,29 @@
+name: 'Post To Steem Chain Action'
+author: 'ETY001'
+description: 'To post an article to Steem chain'
+inputs:
+  title:
+    description: 'The title of the article'
+    required: true
+  content:
+    description: 'The content of the article'
+    required: true
+  tags:
+    description: 'The tags of the article'
+    required: true
+  reward:
+    description: 'The reward setting of article'
+    required: true
+    default: 50
+  author:
+    description: 'The username which you want to use to post'
+    required: true
+  posting_key:
+    description: 'The posting key of author'
+    required: true
+outputs:
+  permlink:
+    description: 'The permlink of article'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
