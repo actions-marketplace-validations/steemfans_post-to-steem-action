@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build index.js -o dist"
+    "build": "ncc build index.js -o dist",
+    "postinstall": "cp pre-commit .git/hooks/"
   },
   "repository": {
     "type": "git",
