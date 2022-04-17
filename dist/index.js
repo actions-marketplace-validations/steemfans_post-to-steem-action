@@ -38607,7 +38607,8 @@ async function main() {
     const author = core.getInput('author', { required: true });
     const wif = core.getInput('posting_key', { required: true });
     const reward = core.getInput('reward', { required: true });
-    const dryRun = core.getInput('dry_run', { default: false });
+    const dryRun = core.getInput('dry_run');
+    console.log('dryRun: ', dryRun);
     const parentAuthor = '';
     const allowVotes = true;
     const allowCurationRewards = true;
@@ -38631,7 +38632,7 @@ async function main() {
 
     const permlink = await createPermlink(title, author, parentAuthor, tagsArr[0]);
 
-    if (dryRun === true) {
+    if (dryRun == 1) {
       console.log('dry_run');
     } else {
       const commentResult = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
