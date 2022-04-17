@@ -26,7 +26,7 @@ Only support three options: 0, 50, 100.
 * 100 means *Power Up 100%*
 
 ### `dry_run`
-If set true, the action would not submit article to Steem chain.
+If set 1, the action would not submit article to Steem chain.
 
 ## Outputs
 
