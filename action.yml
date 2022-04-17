@@ -24,6 +24,9 @@ inputs:
   posting_key:
     description: 'The posting key of author'
     required: true
+  dry_run:
+    description: 'If set true, the action would not submit article to Steem chain.'
+    default: false
 outputs:
   permlink:
     description: 'The permlink of article'

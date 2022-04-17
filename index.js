@@ -11,6 +11,7 @@ async function main() {
     const author = core.getInput('author', { required: true });
     const wif = core.getInput('posting_key', { required: true });
     const reward = core.getInput('reward', { required: true });
+    const dryRun = core.getInput('dry_run', { default: false });
     const parentAuthor = '';
     const allowVotes = true;
     const allowCurationRewards = true;
@@ -34,24 +35,28 @@ async function main() {
 
     const permlink = await createPermlink(title, author, parentAuthor, tagsArr[0]);
 
-    const commentResult = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
+    if (dryRun === true) {
+      console.log('dry_run');
+    } else {
+      const commentResult = await steem.broadcast.commentAsync(wif, parentAuthor, tagsArr[0], author, permlink, title, content, jsonMetadata);
 
-    console.log('comment_result: ', commentResult);
+      console.log('comment_result: ', commentResult);
 
-    switch (reward) {
-      case 100:
-        percentSteemDollars = 0;
-        break;
-      case 50:
-        percentSteemDollars = 10000;
-        break;
-      case 0:
-        maxAcceptedPayout = '0.000 SBD';
-        break;
+      switch (reward) {
+        case 100:
+          percentSteemDollars = 0;
+          break;
+        case 50:
+          percentSteemDollars = 10000;
+          break;
+        case 0:
+          maxAcceptedPayout = '0.000 SBD';
+          break;
+      }
+
+      const commentOptionResult = await steem.broadcast.commentOptionsAsync(wif, author, permlink, maxAcceptedPayout, percentSteemDollars, allowVotes, allowCurationRewards, extensions);
+      console.log('comment_options_result: ', commentOptionResult);
     }
-
-    const commentOptionResult = await steem.broadcast.commentOptionsAsync(wif, author, permlink, maxAcceptedPayout, percentSteemDollars, allowVotes, allowCurationRewards, extensions);
-    console.log('comment_options_result: ', commentOptionResult);
 
     core.setOutput('permlink', `https://steemit.com/${tagsArr[0]}/@${author}/${permlink}`);
 
