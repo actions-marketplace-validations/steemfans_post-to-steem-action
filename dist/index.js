@@ -38658,6 +38658,7 @@ async function main() {
     core.setOutput('permlink', `https://steemit.com/${tagsArr[0]}/@${author}/${permlink}`);
 
   } catch (error) {
+    console.log('post_error:', error);
     core.setFailed(error.message);
   }
 }
@@ -38697,6 +38698,10 @@ async function createPermlink(title, author, parentAuthor, parentPermlink) {
 function slug(text) {
   return getSlug(text.replace(/[<>]/g, ''), { truncate: 128 });
 }
+
+process.on('warning', (warning) => {
+    console.log('warning_stack: ', warning.stack);
+});
 
 // Call the main function to run the action
 main();
