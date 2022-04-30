@@ -5115,7 +5115,7 @@ module.exports = Queue;
 /***/ }),
 
 /***/ 1203:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ ((module) => {
 
 "use strict";
 
@@ -5124,8 +5124,6 @@ module.exports = Queue;
 // Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
 // Distributed under the MIT software license, see the accompanying
 // file LICENSE or http://www.opensource.org/licenses/mit-license.php.
-// @ts-ignore
-var _Buffer = (__nccwpck_require__(1867).Buffer)
 function base (ALPHABET) {
   if (ALPHABET.length >= 255) { throw new TypeError('Alphabet too long') }
   var BASE_MAP = new Uint8Array(256)
@@ -5143,8 +5141,13 @@ function base (ALPHABET) {
   var FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
   var iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
   function encode (source) {
-    if (Array.isArray(source) || source instanceof Uint8Array) { source = _Buffer.from(source) }
-    if (!_Buffer.isBuffer(source)) { throw new TypeError('Expected Buffer') }
+    if (source instanceof Uint8Array) {
+    } else if (ArrayBuffer.isView(source)) {
+      source = new Uint8Array(source.buffer, source.byteOffset, source.byteLength)
+    } else if (Array.isArray(source)) {
+      source = Uint8Array.from(source)
+    }
+    if (!(source instanceof Uint8Array)) { throw new TypeError('Expected Uint8Array') }
     if (source.length === 0) { return '' }
         // Skip & count leading zeroes.
     var zeroes = 0
@@ -5184,7 +5187,7 @@ function base (ALPHABET) {
   }
   function decodeUnsafe (source) {
     if (typeof source !== 'string') { throw new TypeError('Expected String') }
-    if (source.length === 0) { return _Buffer.alloc(0) }
+    if (source.length === 0) { return new Uint8Array() }
     var psz = 0
         // Skip and count leading '1's.
     var zeroes = 0
@@ -5217,8 +5220,7 @@ function base (ALPHABET) {
     while (it4 !== size && b256[it4] === 0) {
       it4++
     }
-    var vch = _Buffer.allocUnsafe(zeroes + (size - it4))
-    vch.fill(0x00, 0, zeroes)
+    var vch = new Uint8Array(zeroes + (size - it4))
     var j = zeroes
     while (it4 !== size) {
       vch[j++] = b256[it4++]
@@ -12847,8 +12849,8 @@ exports.listCiphers = exports.getCiphers = crypto.getCiphers
 /***/ 830:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var basex = __nccwpck_require__(1203)
-var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+const basex = __nccwpck_require__(1203)
+const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
@@ -28894,7 +28896,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var assert = __nccwpck_require__(9491);
 var config = __nccwpck_require__(8993);
 var hash = __nccwpck_require__(29);
-var base58 = __nccwpck_require__(830);
+var base58 = __nccwpck_require__(2211);
 
 /** Addresses are shortened non-reversable hashes of a public key.  The full PublicKey is preferred.
     @deprecated
@@ -29688,7 +29690,7 @@ var ecurve = __nccwpck_require__(9393);
 var Point = ecurve.Point;
 var secp256k1 = ecurve.getCurveByName('secp256k1');
 var BigInteger = __nccwpck_require__(5780);
-var base58 = __nccwpck_require__(830);
+var base58 = __nccwpck_require__(2211);
 var assert = __nccwpck_require__(9491);
 var hash = __nccwpck_require__(29);
 var PublicKey = __nccwpck_require__(216);
@@ -29907,7 +29909,7 @@ var BigInteger = __nccwpck_require__(5780);
 var ecurve = __nccwpck_require__(9393);
 var secp256k1 = ecurve.getCurveByName('secp256k1');
 BigInteger = __nccwpck_require__(5780);
-var base58 = __nccwpck_require__(830);
+var base58 = __nccwpck_require__(2211);
 var hash = __nccwpck_require__(29);
 var config = __nccwpck_require__(8993);
 var assert = __nccwpck_require__(9491);
@@ -30435,7 +30437,7 @@ module.exports = Signature;
 
 
 var bigi = __nccwpck_require__(5780),
-    bs58 = __nccwpck_require__(830),
+    bs58 = __nccwpck_require__(2211),
     ecurve = __nccwpck_require__(9393),
     Point = ecurve.Point,
     secp256k1 = ecurve.getCurveByName('secp256k1'),
@@ -30584,7 +30586,7 @@ var _assert = __nccwpck_require__(9491);
 
 var _assert2 = _interopRequireDefault(_assert);
 
-var _bs = __nccwpck_require__(830);
+var _bs = __nccwpck_require__(2211);
 
 var _bs2 = _interopRequireDefault(_bs);
 
@@ -34686,6 +34688,144 @@ function validateAccountName(value) {
 
 /***/ }),
 
+/***/ 8340:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+// base-x encoding / decoding
+// Copyright (c) 2018 base-x contributors
+// Copyright (c) 2014-2018 The Bitcoin Core developers (base58.cpp)
+// Distributed under the MIT software license, see the accompanying
+// file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+// @ts-ignore
+var _Buffer = (__nccwpck_require__(1867).Buffer)
+function base (ALPHABET) {
+  if (ALPHABET.length >= 255) { throw new TypeError('Alphabet too long') }
+  var BASE_MAP = new Uint8Array(256)
+  for (var j = 0; j < BASE_MAP.length; j++) {
+    BASE_MAP[j] = 255
+  }
+  for (var i = 0; i < ALPHABET.length; i++) {
+    var x = ALPHABET.charAt(i)
+    var xc = x.charCodeAt(0)
+    if (BASE_MAP[xc] !== 255) { throw new TypeError(x + ' is ambiguous') }
+    BASE_MAP[xc] = i
+  }
+  var BASE = ALPHABET.length
+  var LEADER = ALPHABET.charAt(0)
+  var FACTOR = Math.log(BASE) / Math.log(256) // log(BASE) / log(256), rounded up
+  var iFACTOR = Math.log(256) / Math.log(BASE) // log(256) / log(BASE), rounded up
+  function encode (source) {
+    if (Array.isArray(source) || source instanceof Uint8Array) { source = _Buffer.from(source) }
+    if (!_Buffer.isBuffer(source)) { throw new TypeError('Expected Buffer') }
+    if (source.length === 0) { return '' }
+        // Skip & count leading zeroes.
+    var zeroes = 0
+    var length = 0
+    var pbegin = 0
+    var pend = source.length
+    while (pbegin !== pend && source[pbegin] === 0) {
+      pbegin++
+      zeroes++
+    }
+        // Allocate enough space in big-endian base58 representation.
+    var size = ((pend - pbegin) * iFACTOR + 1) >>> 0
+    var b58 = new Uint8Array(size)
+        // Process the bytes.
+    while (pbegin !== pend) {
+      var carry = source[pbegin]
+            // Apply "b58 = b58 * 256 + ch".
+      var i = 0
+      for (var it1 = size - 1; (carry !== 0 || i < length) && (it1 !== -1); it1--, i++) {
+        carry += (256 * b58[it1]) >>> 0
+        b58[it1] = (carry % BASE) >>> 0
+        carry = (carry / BASE) >>> 0
+      }
+      if (carry !== 0) { throw new Error('Non-zero carry') }
+      length = i
+      pbegin++
+    }
+        // Skip leading zeroes in base58 result.
+    var it2 = size - length
+    while (it2 !== size && b58[it2] === 0) {
+      it2++
+    }
+        // Translate the result into a string.
+    var str = LEADER.repeat(zeroes)
+    for (; it2 < size; ++it2) { str += ALPHABET.charAt(b58[it2]) }
+    return str
+  }
+  function decodeUnsafe (source) {
+    if (typeof source !== 'string') { throw new TypeError('Expected String') }
+    if (source.length === 0) { return _Buffer.alloc(0) }
+    var psz = 0
+        // Skip and count leading '1's.
+    var zeroes = 0
+    var length = 0
+    while (source[psz] === LEADER) {
+      zeroes++
+      psz++
+    }
+        // Allocate enough space in big-endian base256 representation.
+    var size = (((source.length - psz) * FACTOR) + 1) >>> 0 // log(58) / log(256), rounded up.
+    var b256 = new Uint8Array(size)
+        // Process the characters.
+    while (source[psz]) {
+            // Decode character
+      var carry = BASE_MAP[source.charCodeAt(psz)]
+            // Invalid character
+      if (carry === 255) { return }
+      var i = 0
+      for (var it3 = size - 1; (carry !== 0 || i < length) && (it3 !== -1); it3--, i++) {
+        carry += (BASE * b256[it3]) >>> 0
+        b256[it3] = (carry % 256) >>> 0
+        carry = (carry / 256) >>> 0
+      }
+      if (carry !== 0) { throw new Error('Non-zero carry') }
+      length = i
+      psz++
+    }
+        // Skip leading zeroes in b256.
+    var it4 = size - length
+    while (it4 !== size && b256[it4] === 0) {
+      it4++
+    }
+    var vch = _Buffer.allocUnsafe(zeroes + (size - it4))
+    vch.fill(0x00, 0, zeroes)
+    var j = zeroes
+    while (it4 !== size) {
+      vch[j++] = b256[it4++]
+    }
+    return vch
+  }
+  function decode (string) {
+    var buffer = decodeUnsafe(string)
+    if (buffer) { return buffer }
+    throw new Error('Non-base' + BASE + ' character')
+  }
+  return {
+    encode: encode,
+    decodeUnsafe: decodeUnsafe,
+    decode: decode
+  }
+}
+module.exports = base
+
+
+/***/ }),
+
+/***/ 2211:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var basex = __nccwpck_require__(8340)
+var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+module.exports = basex(ALPHABET)
+
+
+/***/ }),
+
 /***/ 4294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -38598,6 +38738,7 @@ const core = __nccwpck_require__(2186);
 const getSlug = __nccwpck_require__(8146);
 const secureRandom = __nccwpck_require__(6956);
 const steem = __nccwpck_require__(1651);
+const base58 = __nccwpck_require__(830);
 
 async function main() {
   try {

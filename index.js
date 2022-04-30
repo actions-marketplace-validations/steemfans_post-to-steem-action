@@ -2,6 +2,7 @@ const core = require('@actions/core');
 const getSlug = require('speakingurl');
 const secureRandom = require('secure-random');
 const steem = require('steem');
+const base58 = require('bs58');
 
 async function main() {
   try {
